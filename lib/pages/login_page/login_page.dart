@@ -15,10 +15,10 @@ class LoginPage extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topRight,
           end: Alignment.bottomLeft,
-          stops: [0.1,0.7],
+          stops: [0.1, 0.7],
           colors: [
-            Colors.grey[350],
-            Colors.grey[200],
+            Colors.grey,
+            Colors.grey,
           ],
         ),
       ),
@@ -46,10 +46,11 @@ class LoginPage extends StatelessWidget {
                 ),
               ),
               Container(
-                
                 margin: EdgeInsets.all(defaultMargin),
                 padding: EdgeInsets.all(defaultMargin),
-                decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10)),
                 child: Column(
                   children: [
                     Container(
@@ -59,17 +60,17 @@ class LoginPage extends StatelessWidget {
                             controller: txtUsername,
                             textAlign: TextAlign.center,
                             decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.perm_identity),
+                                prefixIcon: Icon(Icons.perm_identity),
                                 hintText: "Username",
                                 hintStyle: TextStyle(color: Colors.black),
                                 enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
-                                    borderSide:
-                                        BorderSide(color: Colors.blue, width: 2)),
+                                    borderSide: BorderSide(
+                                        color: Colors.blue, width: 2)),
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
-                                    borderSide:
-                                        BorderSide(color: Colors.blue, width: 2))),
+                                    borderSide: BorderSide(
+                                        color: Colors.blue, width: 2))),
                           ),
                           SizedBox(
                             height: 20,
@@ -79,38 +80,51 @@ class LoginPage extends StatelessWidget {
                             obscureText: true,
                             textAlign: TextAlign.center,
                             decoration: InputDecoration(
-                                prefixIcon: Icon(Icons.vpn_key_outlined, color: Colors.grey,),
-                                suffixIcon: Icon(Icons.remove_red_eye, color: Colors.grey,),
+                                prefixIcon: Icon(
+                                  Icons.vpn_key_outlined,
+                                  color: Colors.grey,
+                                ),
+                                suffixIcon: Icon(
+                                  Icons.remove_red_eye,
+                                  color: Colors.grey,
+                                ),
                                 hintText: "Password",
                                 hintStyle: TextStyle(color: Colors.black),
                                 enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
-                                    borderSide:
-                                        BorderSide(color: Colors.blue, width: 2)),
+                                    borderSide: BorderSide(
+                                        color: Colors.blue, width: 2)),
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
-                                    borderSide:
-                                        BorderSide(color: Colors.blue, width: 2))),
+                                    borderSide: BorderSide(
+                                        color: Colors.blue, width: 2))),
                           ),
                         ],
                       ),
-                    ),SizedBox(
+                    ),
+                    SizedBox(
                       height: 20,
                     ),
                     ElevatedButton(
                         onPressed: () {
-                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> DashboardPage()), (route) => false);
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => DashboardPage()),
+                              (route) => false);
                         },
                         style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.all<Color>(Colors.greenAccent),
-                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                Colors.greenAccent),
+                            shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
                                     side: BorderSide(color: Colors.blue))),
                             padding: MaterialStateProperty.all<EdgeInsets>(
                                 EdgeInsets.symmetric(
-                                    horizontal: widthSreen * 0.2, vertical: 10))),
+                                    horizontal: widthSreen * 0.2,
+                                    vertical: 10))),
                         child: Text(
                           "Login",
                           style: TextStyle(
