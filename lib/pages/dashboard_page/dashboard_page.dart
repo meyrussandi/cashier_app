@@ -12,7 +12,7 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     double widthSreen = MediaQuery.of(context).size.width;
     double heightSreen = MediaQuery.of(context).size.height;
-    double defaultMargin = widthSreen * 0.1;
+    double defaultMargin = widthSreen * 0.05;
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -26,54 +26,96 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
       ),
       child: Scaffold(
+        floatingActionButton: FloatingActionButton(
+          child: Icon(
+            Icons.add,
+            color: Colors.green.shade900,
+          ),
+          backgroundColor: Colors.greenAccent,
+          onPressed: () {
+            Navigator.pushNamed(context, "/menu");
+          },
+        ),
+        drawer: Container(
+          width: widthSreen * 0.7,
+          child: Drawer(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                UserAccountsDrawerHeader(
+                    decoration: BoxDecoration(color: Colors.green.shade900),
+                    currentAccountPicture: CircleAvatar(
+                      backgroundColor:
+                          Theme.of(context).platform == TargetPlatform.iOS
+                              ? Colors.green.shade900
+                              : Colors.white,
+                      child: Text("N"),
+                    ),
+                    accountName: Text("Nama Saya"),
+                    accountEmail: SizedBox()),
+                Text("Menu 1"),
+                Text("Menu 2"),
+                Spacer(),
+                Text("Menu 3"),
+              ],
+            ),
+          ),
+        ),
         backgroundColor: Colors.transparent,
         body: NestedScrollView(
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
               SliverAppBar(
-                title: Text("MY DASHBOARD"),
-                backgroundColor: Colors.transparent,
+                title: Text("DASHBOARD"),
+                backgroundColor: Colors.green[900],
               )
             ];
           },
           body: Container(
+              margin: EdgeInsets.symmetric(horizontal: defaultMargin),
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(defaultMargin),
+                      topRight: Radius.circular(defaultMargin))),
               child: Column(
-            children: [
-              Container(
-                child: Image.asset("assets/images/logo2.jpg"),
-              ),
-              Text("List Pesanan",
-                  style: TextStyle(fontSize: 24, color: Colors.black)),
-              Expanded(
-                  child: Padding(
-                padding: const EdgeInsets.all(32),
-                child: _PesananList(),
-              )),
-              Divider(height: 4, color: Colors.black),
-              _PesananTotal(),
-              ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, "/menu");
-                  },
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.greenAccent),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              side: BorderSide(color: Colors.blue))),
-                      padding: MaterialStateProperty.all<EdgeInsets>(
-                          EdgeInsets.symmetric(
-                              horizontal: widthSreen * 0.2, vertical: 10))),
-                  child: Text(
-                    "Buat Pesanan",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w400),
+                children: [
+                  Container(
+                    child: Image.asset("assets/images/logo2.jpg"),
+                  ),
+                  Text("List Pesanan",
+                      style: TextStyle(fontSize: 24, color: Colors.black)),
+                  Expanded(
+                      child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: _PesananList(),
                   )),
-            ],
-          )),
+                  //Divider(height: 4, color: Colors.black),
+                  // _PesananTotal(),
+                  // ElevatedButton(
+                  //     onPressed: () {
+                  //       Navigator.pushNamed(context, "/menu");
+                  //     },
+                  //     style: ButtonStyle(
+                  //         backgroundColor: MaterialStateProperty.all<Color>(
+                  //             Colors.greenAccent),
+                  //         shape:
+                  //             MaterialStateProperty.all<RoundedRectangleBorder>(
+                  //                 RoundedRectangleBorder(
+                  //                     borderRadius: BorderRadius.circular(10),
+                  //                     side: BorderSide(color: Colors.blue))),
+                  //         padding: MaterialStateProperty.all<EdgeInsets>(
+                  //             EdgeInsets.symmetric(
+                  //                 horizontal: widthSreen * 0.2, vertical: 10))),
+                  //     child: Text(
+                  //       "Buat Pesanan",
+                  //       style: TextStyle(
+                  //           color: Colors.black,
+                  //           fontSize: 20,
+                  //           fontWeight: FontWeight.w400),
+                  //     )),
+                ],
+              )),
         ),
       ),
     );
@@ -84,7 +126,6 @@ class _PesananTotal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 200,
       child: Center(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
