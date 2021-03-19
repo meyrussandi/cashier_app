@@ -17,8 +17,8 @@ class LoginPage extends StatelessWidget {
           end: Alignment.bottomLeft,
           stops: [0.1, 0.7],
           colors: [
-            Colors.grey,
-            Colors.grey,
+            Colors.grey.shade300,
+            Colors.grey.shade200,
           ],
         ),
       ),
