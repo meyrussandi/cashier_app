@@ -25,8 +25,27 @@ class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
     double defaultMargin = widthSreen * 0.1;
     return Scaffold(
       bottomSheet: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
+          ElevatedButton(
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, "/dashboard");
+              },
+              style: ButtonStyle(
+                  backgroundColor:
+                  MaterialStateProperty.all<Color>(Colors.greenAccent),
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          side: BorderSide(color: Colors.blue))),
+                  ),
+              child: Text(
+                "Cek Pesanan",
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w400),
+              )),
           ElevatedButton(
               onPressed: () {
                 Navigator.pushReplacementNamed(context, "/dashboard");
@@ -38,9 +57,7 @@ class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
                       RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                           side: BorderSide(color: Colors.blue))),
-                  padding: MaterialStateProperty.all<EdgeInsets>(
-                      EdgeInsets.symmetric(
-                          horizontal: widthSreen * 0.2, vertical: 10))),
+              ),
               child: Text(
                 "Pesan",
                 style: TextStyle(
@@ -53,6 +70,17 @@ class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
+            SliverAppBar(
+              pinned: false,
+              backgroundColor: Colors.green.shade900,
+              title: Text("MENU"),
+              leading: GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Icon(Icons.arrow_back),
+              ),
+            ),
             SliverPersistentHeader(
                 pinned: true,
                 delegate: _SliverAppBarDelegate(
@@ -77,9 +105,19 @@ class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  Text("tab 1"),
+                  ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                      itemCount: makanan.items.length,
+                      itemBuilder: (context, i){
+                    return _MyListMenu(i);
+                  }),
                   Text("tab 2"),
                 ],
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: SizedBox(
+                height: heightSreen * 0.1,
               ),
             ),
             // SliverList(
@@ -134,9 +172,10 @@ class _AddButton extends StatelessWidget {
       (pesanan) => pesanan.items.contains(makanan),
     );
     return TextButton(
-      onPressed: isInPesanan
-          ? null
-          : () {
+      onPressed:
+      // isInPesanan ? null :
+          ()
+      {
               var pesanan = context.read<PesananModel>();
               pesanan.add(makanan);
             },
@@ -149,7 +188,42 @@ class _AddButton extends StatelessWidget {
         }),
       ),
       child:
-          isInPesanan ? Icon(Icons.check, semanticLabel: 'ADDED') : Text('ADD'),
+         // isInPesanan ?
+          Icon(Icons.add, semanticLabel: 'ADDED')
+             // : Text('ADD'),
+    );
+  }
+}
+class _MinButton extends StatelessWidget {
+  final Makanan makanan;
+
+  const _MinButton({required this.makanan, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    var isInPesanan = context.select<PesananModel, bool>(
+          (pesanan) => pesanan.items.contains(makanan),
+    );
+    return TextButton(
+        onPressed:
+         isInPesanan ?
+            ()
+        {
+          var pesanan = context.read<PesananModel>();
+          pesanan.remove(makanan);
+        } : null,
+        style: ButtonStyle(
+          overlayColor: MaterialStateProperty.resolveWith<Color?>((states) {
+            if (states.contains(MaterialState.pressed)) {
+              return Theme.of(context).primaryColor;
+            }
+            return null; // Defer to the widget's default.
+          }),
+        ),
+        child:
+        // isInPesanan ?
+        Icon(Icons.remove, semanticLabel: 'ADDED')
+      // : Text('ADD'),
     );
   }
 }
@@ -186,6 +260,8 @@ class _MyListMenu extends StatelessWidget {
             SizedBox(
               width: 24,
             ),
+            _MinButton(makanan: makanan),
+            Text(makanan.id.toString()),
             _AddButton(makanan: makanan)
           ],
         ),

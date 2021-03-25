@@ -47,7 +47,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     currentAccountPicture: CircleAvatar(
                       backgroundColor:
                           Theme.of(context).platform == TargetPlatform.iOS
-                              ? Colors.green.shade900
+                              ? Colors.white
                               : Colors.white,
                       child: Text("N"),
                     ),
@@ -68,7 +68,11 @@ class _DashboardPageState extends State<DashboardPage> {
               SliverAppBar(
                 title: Text("DASHBOARD"),
                 backgroundColor: Colors.green[900],
-              )
+              ),
+              SliverToBoxAdapter(child: Container(
+                margin: EdgeInsets.symmetric(horizontal: defaultMargin),
+                child: Image.asset("assets/images/logo2.jpg"),
+              ),)
             ];
           },
           body: Container(
@@ -80,9 +84,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       topRight: Radius.circular(defaultMargin))),
               child: Column(
                 children: [
-                  Container(
-                    child: Image.asset("assets/images/logo2.jpg"),
-                  ),
+
                   Text("List Pesanan",
                       style: TextStyle(fontSize: 24, color: Colors.black)),
                   Expanded(
@@ -91,7 +93,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     child: _PesananList(),
                   )),
                   //Divider(height: 4, color: Colors.black),
-                  // _PesananTotal(),
+                   _PesananTotal(),
                   // ElevatedButton(
                   //     onPressed: () {
                   //       Navigator.pushNamed(context, "/menu");

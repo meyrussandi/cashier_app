@@ -103,7 +103,7 @@ class LoginPage extends StatelessWidget {
                           children: [
                             TextFormField(
                               controller: txtUsername,
-                              textAlign: TextAlign.center,
+                              textAlign: TextAlign.left,
                               decoration: InputDecoration(
                                   prefixIcon: Icon(Icons.perm_identity),
                                   hintText: "Username",
@@ -123,7 +123,7 @@ class LoginPage extends StatelessWidget {
                             TextFormField(
                               controller: txtPassword,
                               obscureText: true,
-                              textAlign: TextAlign.center,
+                              textAlign: TextAlign.left,
                               decoration: InputDecoration(
                                   prefixIcon: Icon(
                                     Icons.vpn_key_outlined,
