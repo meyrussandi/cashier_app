@@ -1,5 +1,6 @@
 import 'package:cashier_app/models/menu_model.dart';
 import 'package:cashier_app/models/pesanan_model.dart';
+import 'package:cashier_app/pages/menu_page/menu_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -29,7 +30,7 @@ class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
         children: [
           ElevatedButton(
               onPressed: () {
-                Navigator.pushReplacementNamed(context, "/dashboard");
+                Navigator.of(context).push(MenuDialog());
               },
               style: ButtonStyle(
                   backgroundColor:
