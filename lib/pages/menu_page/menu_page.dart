@@ -44,7 +44,7 @@ class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
                         side: BorderSide(color: Colors.blue))),
               ),
               child: Text(
-                "Cek Pesanan",
+                "Cek Pesanan ${myCashier.myBaskets.length}",
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 20,
