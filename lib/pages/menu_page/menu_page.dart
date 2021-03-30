@@ -1,6 +1,8 @@
 import 'package:cashier_app/models/menu_model.dart';
 import 'package:cashier_app/models/pesanan_model.dart';
+import 'package:cashier_app/pages/menu_page/menu_details.dart';
 import 'package:cashier_app/pages/menu_page/menu_dialog.dart';
+import 'package:cashier_app/services/myCashier.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -10,7 +12,7 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
-  late TabController _tabController;
+  TabController _tabController;
 
   @override
   void initState() {
@@ -24,6 +26,7 @@ class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
     double widthSreen = MediaQuery.of(context).size.width;
     double heightSreen = MediaQuery.of(context).size.height;
     double defaultMargin = widthSreen * 0.1;
+    var myCashier = Provider.of<MyCashier>(context);
     return Scaffold(
       bottomSheet: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -33,13 +36,13 @@ class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
                 Navigator.of(context).push(MenuDialog());
               },
               style: ButtonStyle(
-                  backgroundColor:
-                  MaterialStateProperty.all<Color>(Colors.greenAccent),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          side: BorderSide(color: Colors.blue))),
-                  ),
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(Colors.greenAccent),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        side: BorderSide(color: Colors.blue))),
+              ),
               child: Text(
                 "Cek Pesanan",
                 style: TextStyle(
@@ -52,12 +55,12 @@ class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
                 Navigator.pushReplacementNamed(context, "/dashboard");
               },
               style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.greenAccent),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          side: BorderSide(color: Colors.blue))),
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(Colors.greenAccent),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        side: BorderSide(color: Colors.blue))),
               ),
               child: Text(
                 "Pesan",
@@ -107,11 +110,46 @@ class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
                 controller: _tabController,
                 children: [
                   ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                      itemCount: makanan.items.length,
-                      itemBuilder: (context, i){
-                    return _MyListMenu(i);
-                  }),
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: myCashier.makanan.length,
+                      itemBuilder: (context, i) {
+                        return ListTile(
+                          onTap: () {
+                            myCashier.setActiveMenu(myCashier.makanan[i]);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => MenuDetails()));
+                          },
+                          minVerticalPadding: 20,
+                          leading: Image.network(
+                            myCashier.makanan[i].pict.toString(),
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                          ),
+                          title: Text(
+                              "nama : " + myCashier.makanan[i].name.toString()),
+                          trailing: Container(
+                            color: Colors.grey,
+                            width: widthSreen * 0.18,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Icon(
+                                  Icons.remove,
+                                  color: Colors.red,
+                                ),
+                                Text(myCashier.makanan[i].qty.toString()),
+                                Icon(
+                                  Icons.add,
+                                  color: Colors.blue,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }),
                   Text("tab 2"),
                 ],
               ),
@@ -165,7 +203,7 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
 class _AddButton extends StatelessWidget {
   final Makanan makanan;
 
-  const _AddButton({required this.makanan, Key? key}) : super(key: key);
+  const _AddButton({Key key, this.makanan}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -173,48 +211,14 @@ class _AddButton extends StatelessWidget {
       (pesanan) => pesanan.items.contains(makanan),
     );
     return TextButton(
-      onPressed:
-      // isInPesanan ? null :
-          ()
-      {
-              var pesanan = context.read<PesananModel>();
-              pesanan.add(makanan);
-            },
-      style: ButtonStyle(
-        overlayColor: MaterialStateProperty.resolveWith<Color?>((states) {
-          if (states.contains(MaterialState.pressed)) {
-            return Theme.of(context).primaryColor;
-          }
-          return null; // Defer to the widget's default.
-        }),
-      ),
-      child:
-         // isInPesanan ?
-          Icon(Icons.add, semanticLabel: 'ADDED')
-             // : Text('ADD'),
-    );
-  }
-}
-class _MinButton extends StatelessWidget {
-  final Makanan makanan;
-
-  const _MinButton({required this.makanan, Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    var isInPesanan = context.select<PesananModel, bool>(
-          (pesanan) => pesanan.items.contains(makanan),
-    );
-    return TextButton(
         onPressed:
-         isInPesanan ?
-            ()
-        {
+            // isInPesanan ? null :
+            () {
           var pesanan = context.read<PesananModel>();
-          pesanan.remove(makanan);
-        } : null,
+          pesanan.add(makanan);
+        },
         style: ButtonStyle(
-          overlayColor: MaterialStateProperty.resolveWith<Color?>((states) {
+          overlayColor: MaterialStateProperty.resolveWith<Color>((states) {
             if (states.contains(MaterialState.pressed)) {
               return Theme.of(context).primaryColor;
             }
@@ -222,10 +226,45 @@ class _MinButton extends StatelessWidget {
           }),
         ),
         child:
-        // isInPesanan ?
-        Icon(Icons.remove, semanticLabel: 'ADDED')
-      // : Text('ADD'),
+            // isInPesanan ?
+            Icon(Icons.add, semanticLabel: 'ADDED')
+        // : Text('ADD'),
+        );
+  }
+}
+
+class _MinButton extends StatelessWidget {
+  final Makanan makanan;
+
+  const _MinButton({Key key, this.makanan}) : super(key: key);
+
+  //const _MinButton({required this.makanan, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    var isInPesanan = context.select<PesananModel, bool>(
+      (pesanan) => pesanan.items.contains(makanan),
     );
+    return TextButton(
+        onPressed: isInPesanan
+            ? () {
+                var pesanan = context.read<PesananModel>();
+                pesanan.remove(makanan);
+              }
+            : null,
+        style: ButtonStyle(
+          overlayColor: MaterialStateProperty.resolveWith<Color>((states) {
+            if (states.contains(MaterialState.pressed)) {
+              return Theme.of(context).primaryColor;
+            }
+            return null; // Defer to the widget's default.
+          }),
+        ),
+        child:
+            // isInPesanan ?
+            Icon(Icons.remove, semanticLabel: 'ADDED')
+        // : Text('ADD'),
+        );
   }
 }
 
@@ -233,13 +272,17 @@ class _MinButton extends StatelessWidget {
 class _MyListMenu extends StatelessWidget {
   final int index;
 
-  _MyListMenu(this.index, {Key? key}) : super(key: key);
+  _MyListMenu({Key key, this.index}) : super(key: key);
+  //_MyListMenu(this.index, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     var makanan = context.select<MenuModel, Makanan>(
       (menu) => menu.getByPosition(index),
     );
+
+    var myCashier = Provider.of<MyCashier>(context);
+    print("makanan : " + myCashier.makanan[0].name.toString());
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: LimitedBox(

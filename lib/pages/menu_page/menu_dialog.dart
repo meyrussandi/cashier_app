@@ -1,9 +1,9 @@
-
+import 'package:cashier_app/pages/menu_page/menu_details.dart';
+import 'package:cashier_app/services/myCashier.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MenuDialog extends ModalRoute<void> {
-
-
   Duration get transitionDuration => Duration(milliseconds: 500);
 
   @override
@@ -23,10 +23,11 @@ class MenuDialog extends ModalRoute<void> {
 
   @override
   Widget buildPage(
-      BuildContext context,
-      Animation<double> animation,
-      Animation<double> secondaryAnimation,
-      ) {
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+  ) {
+    var myOrders = Provider.of<MyCashier>(context);
     return Material(
       type: MaterialType.transparency,
       child: SafeArea(
@@ -43,8 +44,52 @@ class MenuDialog extends ModalRoute<void> {
                 ),
               ),
             ),
-            TextField(decoration: InputDecoration(hintText: "Nama Pemesan"),),
-
+            TextField(
+              decoration: InputDecoration(hintText: "Nama Pemesan"),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: myOrders.myBaskets.length,
+                itemBuilder: (BuildContext context, int i) {
+                  return ListTile(
+                    onTap: () {
+                      myOrders.setActiveMenu(myOrders.makanan[i]);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MenuDetails()));
+                    },
+                    minVerticalPadding: 20,
+                    leading: Image.network(
+                      myOrders.makanan[i].pict.toString(),
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.cover,
+                    ),
+                    title:
+                        Text("nama : " + myOrders.makanan[i].name.toString()),
+                    trailing: Container(
+                      color: Colors.grey,
+                      width: MediaQuery.of(context).size.width * 0.18,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Icon(
+                            Icons.remove,
+                            color: Colors.red,
+                          ),
+                          Text(myOrders.makanan[i].qty.toString()),
+                          Icon(
+                            Icons.add,
+                            color: Colors.blue,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            )
           ],
         ),
       ),

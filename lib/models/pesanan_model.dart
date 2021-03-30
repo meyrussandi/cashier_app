@@ -2,7 +2,7 @@ import 'package:cashier_app/models/menu_model.dart';
 import 'package:flutter/cupertino.dart';
 
 class PesananModel extends ChangeNotifier {
-  late MenuModel _menu;
+  MenuModel _menu;
 
   final List<int> _itemsId = [];
 

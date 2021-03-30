@@ -3,6 +3,7 @@ import 'package:cashier_app/models/pesanan_model.dart';
 import 'package:cashier_app/pages/dashboard_page/dashboard_page.dart';
 import 'package:cashier_app/pages/login_page/login_page.dart';
 import 'package:cashier_app/pages/menu_page/menu_page.dart';
+import 'package:cashier_app/services/myCashier.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider(create: (context) => MenuModel()),
+        ChangeNotifierProvider(create: (context) => MyCashier()),
         ChangeNotifierProxyProvider<MenuModel, PesananModel>(
             create: (context) => PesananModel(),
             update: (context, menu, pesanan) {
