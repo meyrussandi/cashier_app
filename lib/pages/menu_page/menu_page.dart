@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cashier_app/models/menu_model.dart';
 import 'package:cashier_app/models/pesanan_model.dart';
 import 'package:cashier_app/pages/menu_page/menu_details.dart';
@@ -5,6 +7,7 @@ import 'package:cashier_app/pages/menu_page/menu_dialog.dart';
 import 'package:cashier_app/services/myCashier.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
 class MenuPage extends StatefulWidget {
   @override
@@ -18,6 +21,12 @@ class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
   void initState() {
     _tabController = TabController(length: 2, vsync: this);
     super.initState();
+  }
+
+  Future getMenu() async {
+    final response = await http.get("http://192.168.1.11/dbresto/menu.php");
+    print("data " + json.decode(response.body).length.toString());
+    return json.decode(response.body);
   }
 
   @override
@@ -109,47 +118,55 @@ class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  ListView.builder(
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: myCashier.makanan.length,
-                      itemBuilder: (context, i) {
-                        return ListTile(
-                          onTap: () {
-                            myCashier.setActiveMenu(myCashier.makanan[i]);
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => MenuDetails()));
-                          },
-                          minVerticalPadding: 20,
-                          leading: Image.network(
-                            myCashier.makanan[i].pict.toString(),
-                            width: 100,
-                            height: 100,
-                            fit: BoxFit.cover,
-                          ),
-                          title: Text(
-                              "nama : " + myCashier.makanan[i].name.toString()),
-                          trailing: Container(
-                            color: Colors.grey,
-                            width: widthSreen * 0.18,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Icon(
-                                  Icons.remove,
-                                  color: Colors.red,
-                                ),
-                                Text(myCashier.makanan[i].qty.toString()),
-                                Icon(
-                                  Icons.add,
-                                  color: Colors.blue,
-                                ),
-                              ],
+                  FutureBuilder(
+                    future: getMenu(),
+                    builder: (context, snapshot) => ListView.builder(
+                        // itemCount: myCashier.makanan.length,
+                        itemCount: snapshot.data.length,
+                        itemBuilder: (context, i) {
+                          return ListTile(
+                            onTap: () {
+                              myCashier.setActiveMenu(myCashier.makanan[i]);
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => MenuDetails()));
+                            },
+                            minVerticalPadding: 20,
+                            leading: Image.network(
+                              "http://192.168.1.11/dbresto/menu/" +
+                                  snapshot.data[i]["im1"],
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.cover,
                             ),
-                          ),
-                        );
-                      }),
+                            title: Text(
+                              "nama : " + snapshot.data[i]["nma"].toString(),
+                            ),
+                            // Text("nama : " +
+                            // myCashier.makanan[i].name.toString(),)
+                            trailing: Container(
+                              color: Colors.grey,
+                              width: widthSreen * 0.18,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Icon(
+                                    Icons.remove,
+                                    color: Colors.red,
+                                  ),
+//                                  Text(myCashier.makanan[i].qty.toString()),
+                                  Icon(
+                                    Icons.add,
+                                    color: Colors.blue,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }),
+                  ),
                   Text("tab 2"),
                 ],
               ),

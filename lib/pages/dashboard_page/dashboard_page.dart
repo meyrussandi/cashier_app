@@ -1,4 +1,5 @@
 import 'package:cashier_app/models/pesanan_model.dart';
+import 'package:cashier_app/services/dbService.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
@@ -13,6 +14,9 @@ class _DashboardPageState extends State<DashboardPage> {
     double widthSreen = MediaQuery.of(context).size.width;
     double heightSreen = MediaQuery.of(context).size.height;
     double defaultMargin = widthSreen * 0.05;
+
+    DBService().getPesanan();
+
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -69,10 +73,12 @@ class _DashboardPageState extends State<DashboardPage> {
                 title: Text("DASHBOARD"),
                 backgroundColor: Colors.green[900],
               ),
-              SliverToBoxAdapter(child: Container(
-                margin: EdgeInsets.symmetric(horizontal: defaultMargin),
-                child: Image.asset("assets/images/logo2.jpg"),
-              ),)
+              SliverToBoxAdapter(
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: defaultMargin),
+                  child: Image.asset("assets/images/logo2.jpg"),
+                ),
+              )
             ];
           },
           body: Container(
@@ -84,7 +90,6 @@ class _DashboardPageState extends State<DashboardPage> {
                       topRight: Radius.circular(defaultMargin))),
               child: Column(
                 children: [
-
                   Text("List Pesanan",
                       style: TextStyle(fontSize: 24, color: Colors.black)),
                   Expanded(
@@ -93,7 +98,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     child: _PesananList(),
                   )),
                   //Divider(height: 4, color: Colors.black),
-                   _PesananTotal(),
+                  _PesananTotal(),
                   // ElevatedButton(
                   //     onPressed: () {
                   //       Navigator.pushNamed(context, "/menu");
