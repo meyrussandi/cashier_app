@@ -1,5 +1,7 @@
 import 'package:cashier_app/pages/menu_page/menu_details.dart';
 import 'package:cashier_app/services/myCashier.dart';
+import 'package:cashier_app/services/providers.dart';
+import 'package:cashier_app/utils/constanst.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -27,7 +29,7 @@ class MenuDialog extends ModalRoute<void> {
     Animation<double> animation,
     Animation<double> secondaryAnimation,
   ) {
-    var myOrders = Provider.of<MyCashier>(context);
+    var myOrders = Provider.of<MenuProvider>(context);
     return Material(
       type: MaterialType.transparency,
       child: SafeArea(
@@ -44,6 +46,7 @@ class MenuDialog extends ModalRoute<void> {
                 ),
               ),
             ),
+            Text("panjang" + myOrders.makanan.length.toString()),
             TextField(
               decoration: InputDecoration(hintText: "Nama Pemesan"),
             ),
@@ -51,42 +54,135 @@ class MenuDialog extends ModalRoute<void> {
               child: ListView.builder(
                 itemCount: myOrders.myBaskets.length,
                 itemBuilder: (BuildContext context, int i) {
-                  return ListTile(
-                    onTap: () {
-                      myOrders.setActiveMenu(myOrders.makanan[i]);
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => MenuDetails()));
-                    },
-                    minVerticalPadding: 20,
-                    leading: Image.network(
-                      myOrders.makanan[i].pict.toString(),
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
-                    ),
-                    title:
-                        Text("nama : " + myOrders.makanan[i].name.toString()),
-                    trailing: Container(
-                      color: Colors.grey,
-                      width: MediaQuery.of(context).size.width * 0.18,
+                  return InkWell(
+                      onTap: () {
+//                        myOrders.setActiveMenu(myOrders.myBaskets[i]);
+                        // Navigator.push(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //         builder: (context) => MenuDetails()));
+                      },
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Icon(
-                            Icons.remove,
-                            color: Colors.red,
+                          Image.network(
+                            Commons.baseURL +
+                                "menu/" +
+                                myOrders.myBaskets[i].im1.toString(),
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
                           ),
-                          Text(myOrders.makanan[i].qty.toString()),
-                          Icon(
-                            Icons.add,
-                            color: Colors.blue,
+                          Expanded(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  myOrders.myBaskets[i].nma.toString(),
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                        "Rp " +
+                                            myOrders
+                                                .getMyOrderPrice(
+                                                    myOrders.myBaskets[i])
+                                                .toString(),
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          color: Colors.green.shade400,
+                                        )),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                          border: Border.all(width: 1)),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          myOrders.myBaskets.contains(
+                                                  myOrders.myBaskets[i])
+                                              ? InkWell(
+                                                  onTap: () {
+                                                    myOrders.removeToMyOrder(
+                                                        myOrders.myBaskets[i]);
+                                                  },
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                        border: Border(
+                                                            right: BorderSide(
+                                                                width: 1))),
+                                                    child: Icon(
+                                                      Icons.remove,
+                                                      color: Colors.red,
+                                                    ),
+                                                  ),
+                                                )
+                                              : SizedBox(),
+                                          myOrders.myBaskets.contains(
+                                                  myOrders.myBaskets[i])
+                                              ? Container(
+                                                  alignment: Alignment.center,
+                                                  width: MediaQuery.of(context)
+                                                          .size
+                                                          .width *
+                                                      0.1,
+                                                  child: Text(
+                                                      "${myOrders.myBaskets[i].qty}"))
+                                              : SizedBox(),
+                                          InkWell(
+                                            onTap: () {
+                                              myOrders.addToMyOrder(
+                                                  myOrders.myBaskets[i]);
+                                            },
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                  border: Border(
+                                                      left: BorderSide(
+                                                          width: myOrders
+                                                                  .myBaskets
+                                                                  .contains(myOrders
+                                                                      .myBaskets[i])
+                                                              ? 0
+                                                              : 1))),
+                                              child: Icon(
+                                                Icons.add,
+                                                color: Colors.green,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
+                          // Container(
+                          //   color: Colors.grey,
+                          //   width: MediaQuery.of(context).size.width * 0.18,
+                          //   child: Row(
+                          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          //     children: [
+                          //       Icon(
+                          //         Icons.remove,
+                          //         color: Colors.red,
+                          //       ),
+                          //       Text(myOrders.myBaskets[i].qty.toString()),
+                          //       Icon(
+                          //         Icons.add,
+                          //         color: Colors.blue,
+                          //       ),
+                          //     ],
+                          //   ),
+                          // ),
                         ],
-                      ),
-                    ),
-                  );
+                      ));
                 },
               ),
             )

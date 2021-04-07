@@ -1,14 +1,15 @@
 import 'dart:convert';
+import 'dart:io';
 
-import 'package:cashier_app/services/pesanan.dart';
+import 'package:cashier_app/models/menu_model.dart';
+import 'package:cashier_app/models/pesanan_model.dart';
+import 'package:cashier_app/utils/constanst.dart';
 import 'package:http/http.dart' as http;
 
 class DBService {
-  String baseUrl = "192.168.18.44";
   Future loginKaryawan(String email, String katasandi) async {
     try {
-      final response =
-          await http.post("http://192.168.1.11/dbresto/login.php", headers: {
+      final response = await http.post(Commons.baseURL + "login.php", headers: {
         "Access-Control-Allow-Origin": "*", // Required for CORS support to work
         "Access-Control-Allow-Headers":
             "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
@@ -30,19 +31,51 @@ class DBService {
     }
   }
 
-  Future getPesanan() async {
+  Future<Pesanan> getPesanan() async {
     try {
       var map = Map<String, dynamic>();
-      final response = await http.get("http://192.168.1.11/dbresto/test.php");
+      final response = await http.get(Commons.baseURL + "test.php");
       if (response.statusCode == 200) {
-        print("data : " + json.decode(response.body)["data"].toString());
-        return json.decode(response.body)["data"];
+        var responseJson = Commons.returnResponse(response);
+//        menu = Menu.fromJson(responseJson);
+        // print("data menu" + responseJson.toString());
+        return Pesanan.fromJson(responseJson);
+        //return menu;
       } else {
-        return response.statusCode.toString();
+        return null;
       }
-    } catch (e) {
-      print("Exception Login error $e");
-      return e.toString();
+    } on SocketDirection {
+      return null;
+    }
+    //   if (response.statusCode == 200) {
+    //     print("data : " + json.decode(response.body)["data"].toString());
+    //     return json.decode(response.body)["data"];
+    //   } else {
+    //     return response.statusCode.toString();
+    //   }
+    // } catch (e) {
+    //   print("Exception Login error $e");
+    //   return e.toString();
+    // }
+  }
+
+  Future<Menu> fetchMenu() async {
+    try {
+      final response = await http.get(Commons.baseURL + "menu.php", headers: {
+        "Accept": "application/json",
+        "content-type": "application/json",
+      });
+      if (response.statusCode == 200) {
+        var responseJson = Commons.returnResponse(response);
+//        menu = Menu.fromJson(responseJson);
+        // print("data menu" + responseJson.toString());
+        return Menu.fromJson(responseJson);
+        //return menu;
+      } else {
+        return null;
+      }
+    } on SocketDirection {
+      return null;
     }
   }
 }
