@@ -12,12 +12,12 @@ import 'package:http/http.dart' as http;
 
 class MenuProvider extends ChangeNotifier {
   //global variabel
-  List<Makanan> _makanan = [];
+//  List<Makanan> _makanan = [];
   List<Makanan> _myBaskets = [];
   Makanan _activeMakanan = null;
   Menu menu;
 
-  List<Makanan> get makanan => _makanan;
+//  List<Makanan> get makanan => _makanan;
   List<Makanan> get myBaskets => _myBaskets;
   Makanan get activeMakanan => _activeMakanan;
 
@@ -30,13 +30,22 @@ class MenuProvider extends ChangeNotifier {
     _activeMakanan = m;
   }
 
+  // setPrice() {
+  //   Makanan m = menu.items.firstWhere(
+  //       (element) => element.idn == _myBaskets[index].idn,
+  //       orElse: () => null);
+  //   _myBaskets[index].hrg = m.hrg * _myBaskets[index].qty;
+  //   notifyListeners();
+  // }
+
   addToMyOrder(Makanan m) {
     //cek first in the order
     Makanan isThere = _myBaskets.firstWhere((element) => element.idn == m.idn,
         orElse: () => null);
-    if (isThere != null) {
+    if (_myBaskets.contains(m)) {
       isThere.qty += 1;
     } else {
+      m.qty = 1;
       _myBaskets.add(m);
     }
     notifyListeners();
@@ -46,11 +55,22 @@ class MenuProvider extends ChangeNotifier {
     //cek first in the order
     Makanan isThere =
         _myBaskets.firstWhere((a) => a.idn == m.idn, orElse: () => null);
-    if (isThere != null && isThere.qty == 1) {
-      _myBaskets.remove(m);
-    } else {
-      isThere.qty -= 1;
+    if (_myBaskets.contains(m)) {
+      print("contains");
+      if (isThere.qty == 1) {
+        print("remove");
+        _myBaskets.remove(m);
+      } else {
+        print("minus");
+        isThere.qty -= 1;
+      }
     }
+    // if (isThere != null && isThere.qty == 1) {
+    //   print("masuk");
+    //   // _myBaskets.remove(m);
+    // } else {
+    //   // isThere.qty -= 1;
+    // }
     notifyListeners();
   }
 
@@ -65,15 +85,13 @@ class MenuProvider extends ChangeNotifier {
   getMyOrderTotalPrice() {
     double total = 0;
     for (int i = 0; i < _myBaskets.length; i++) {
-      total += myBaskets[i].hrg;
+      total += (myBaskets[i].hrg * myBaskets[i].qty);
     }
     return total;
   }
 
   getMyOrderPrice(var mb) {
-    double total = 0;
-    total = mb.hrg * mb.qty;
-    return total;
+    return mb.hrg * mb.qty;
   }
 
   clearMyBasket() {

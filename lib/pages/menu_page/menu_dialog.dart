@@ -46,7 +46,7 @@ class MenuDialog extends ModalRoute<void> {
                 ),
               ),
             ),
-            Text("panjang" + myOrders.makanan.length.toString()),
+//            Text("panjang" + myOrders.makanan.length.toString()),
             TextField(
               decoration: InputDecoration(hintText: "Nama Pemesan"),
             ),

@@ -80,3 +80,23 @@ class Menu {
 //   @override
 //   bool operator ==(Object other) => other is Makanan && other.id == id;
 // }
+
+class Keranjang {
+  Keranjang({
+    this.idn,
+    this.acc,
+    this.nma,
+    this.hrg,
+    this.im1,
+    this.ket,
+    this.qty,
+  });
+
+  int idn;
+  String acc;
+  String nma;
+  double hrg;
+  String im1;
+  String ket;
+  int qty;
+}

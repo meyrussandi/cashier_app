@@ -25,7 +25,7 @@ class Makanan {
   double hrg;
   String im1;
   String ket;
-  int qty = 0;
+  int qty;
 
   factory Makanan.fromJson(Map<String, dynamic> json) => Makanan(
       idn: json["idn"] == null ? null : int.parse(json["idn"]),

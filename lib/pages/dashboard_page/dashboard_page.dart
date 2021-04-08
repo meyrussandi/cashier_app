@@ -116,7 +116,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   padding: EdgeInsets.all(6),
                   width: widthSreen,
                   color: Colors.grey.shade300,
-                  child: Text("List Pesanan",
+                  child: Text("List Pesanan $nama",
                       style: TextStyle(fontSize: 24, color: Colors.black)),
                 ),
                 Expanded(
@@ -199,18 +199,50 @@ class _PesananList extends StatelessWidget {
             ? Center(child: Text("Tidak Ada Pesanan"))
             : ListView.builder(
                 itemCount: pesanan.data.length,
-                itemBuilder: (context, index) => ListTile(
-                  leading: Icon(Icons.done),
-                  trailing: IconButton(
-                      icon: Icon(Icons.remove_circle_outline),
-                      onPressed: () {
-//                    pesanan.remove(pesanan.data[index]);
-                      }),
-                  title: Text(
-                    "nama " + pesanan.data[index].nma,
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ),
-              );
+                itemBuilder: (context, index) => Column(
+                      children: [
+                        ExpansionTile(
+                          title: Text(
+                            "nama " + pesanan.data[index].nma,
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          childrenPadding: EdgeInsets.symmetric(
+                            horizontal: 18,
+                          ),
+                          children: [
+                            ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: 5,
+                                itemBuilder: (context, i) => Container(
+                                        child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text("Menu"),
+                                        Text("Total Harga"),
+                                        Text("Jumlah"),
+                                      ],
+                                    ))),
+                            Align(
+                                alignment: Alignment.centerRight,
+                                child: Text("Total Harga")),
+                          ],
+                        ),
+                        Divider(),
+                      ],
+                    )
+//                 ListTile(
+//                   leading: Icon(Icons.done),
+//                   trailing: IconButton(
+//                       icon: Icon(Icons.remove_circle_outline),
+//                       onPressed: () {
+// //                    pesanan.remove(pesanan.data[index]);
+//                       }),
+//                   title: Text(
+//                     "nama " + pesanan.data[index].nma,
+//                     style: TextStyle(color: Colors.black),
+//                   ),
+//                 ),
+                );
   }
 }

@@ -22,7 +22,7 @@ class MenuPage extends StatefulWidget {
 
 class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
   TabController _tabController;
-  var myCashier;
+  MenuProvider myCashier;
   @override
   void initState() {
     _tabController = TabController(length: 2, vsync: this);
@@ -87,7 +87,7 @@ class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
                                             shape: BoxShape.circle,
                                             color: Colors.green),
                                         child: Text(
-                                          myCashier.myBaskets.length.toString(),
+                                          myCashier.getMyOrdersQty().toString(),
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontWeight: FontWeight.w400),
@@ -111,17 +111,24 @@ class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
                           )),
                     ),
                   ),
-                  Container(
-                    alignment: Alignment.center,
-                    height: 48,
-                    color: Colors.green,
-                    width: widthSreen * 0.3,
-                    child: Text(
-                      "Pesan",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w400),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => LoginPage()));
+                      myCashier.clearMyBasket();
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 48,
+                      color: Colors.green,
+                      width: widthSreen * 0.3,
+                      child: Text(
+                        "Pesan",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w400),
+                      ),
                     ),
                   ),
                 ],
