@@ -31,10 +31,36 @@ class DBService {
     }
   }
 
+  Future postPesanan(Map<String, dynamic> trkPsnHdr,
+      List<Map<String, dynamic>> trkPsnDtl) async {
+    try {
+      final response =
+          await http.post(Commons.baseURL + "createpesanan.php", headers: {
+        "Access-Control-Allow-Origin": "*", // Required for CORS support to work
+        "Access-Control-Allow-Headers":
+            "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
+        "Access-Control-Allow-Methods": "POST, OPTIONS"
+      }, body: <String, dynamic>{
+        "trk_psn_hdr": json.encode(trkPsnHdr),
+        "trk_psn_dtl": json.encode(trkPsnDtl)
+      });
+
+      if (response.statusCode == 200) {
+        print("data : " + response.body.toString());
+        return "200";
+      } else {
+        return response.statusCode.toString();
+      }
+    } catch (e) {
+      print("Post pesanan error : $e");
+      return e.toString();
+    }
+  }
+
   Future<Pesanan> getPesanan() async {
     try {
       var map = Map<String, dynamic>();
-      final response = await http.get(Commons.baseURL + "test.php");
+      final response = await http.get(Commons.baseURL + "getpesanan.php");
       if (response.statusCode == 200) {
         var responseJson = Commons.returnResponse(response);
 //        menu = Menu.fromJson(responseJson);
@@ -59,6 +85,44 @@ class DBService {
     // }
   }
 
+  Future getPesananDetails(String idt) async {
+    try {
+      final response = await http.post(
+          Commons.baseURL + "getpesanandetails.php",
+          body: <String, dynamic>{
+            "idt": idt,
+          });
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        return null;
+      }
+    } on SocketDirection {
+      return null;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  Future getMenuByAcc(String acc) async {
+    try {
+      final response = await http
+          .post(Commons.baseURL + "getmenubyacc.php", body: <String, dynamic>{
+        "acc": acc,
+      });
+      if (response.statusCode == 200) {
+        print(response.body);
+        return jsonDecode(response.body);
+      } else {
+        return null;
+      }
+    } on SocketDirection {
+      return null;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
   Future<Menu> fetchMenu() async {
     try {
       final response = await http.get(Commons.baseURL + "menu.php", headers: {
@@ -72,7 +136,7 @@ class DBService {
         return Menu.fromJson(responseJson);
         //return menu;
       } else {
-        return null;
+        return Menu();
       }
     } on SocketDirection {
       return null;

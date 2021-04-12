@@ -9,7 +9,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 
 class Commons {
-  static const baseURL = "http://192.168.1.11/dbresto/";
+  static const baseURL = "http://192.168.18.44/dbresto/";
 
   static Widget sampleLoader() {
     return Center(child: SpinKitFoldingCube(

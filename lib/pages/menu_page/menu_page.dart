@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cashier_app/models/makanan.dart';
 import 'package:cashier_app/models/menu_model.dart';
 import 'package:cashier_app/models/pesanan_model.dart';
@@ -113,9 +114,7 @@ class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
                   ),
                   InkWell(
                     onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => LoginPage()));
-                      myCashier.clearMyBasket();
+                      Navigator.of(context).push(MenuDialog());
                     },
                     child: Container(
                       alignment: Alignment.center,
@@ -123,7 +122,7 @@ class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
                       color: Colors.green,
                       width: widthSreen * 0.3,
                       child: Text(
-                        "Pesan",
+                        "Checkout",
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 20,
@@ -180,7 +179,9 @@ class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
 
                         return Commons.sampleLoading("load data ... ");
                       })
-                  : buildListViewMenu(widthSreen),
+                  : myCashier.menu == null
+                      ? Commons.sampleLoading("load data ... ")
+                      : buildListViewMenu(widthSreen),
             ),
             SliverToBoxAdapter(
               child: SizedBox(
@@ -199,8 +200,15 @@ class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
       itemBuilder: (context, index) {
         return Container(
           height: MediaQuery.of(context).size.height * 0.15,
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          margin: EdgeInsets.only(bottom: 20),
+          padding: EdgeInsets.all(8),
+          margin: EdgeInsets.only(bottom: 16, left: 8, right: 8),
+          decoration: BoxDecoration(color: Colors.white, boxShadow: [
+            BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 5,
+                blurRadius: 7,
+                offset: Offset(0, 3))
+          ]),
           child: InkWell(
             onTap: () {
               myCashier.setActiveMenu(myCashier.menu.items[index]);
@@ -209,11 +217,18 @@ class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
             },
             child: Row(
               children: [
-                Image.network(
-                  Commons.baseURL + "menu/" + myCashier.menu.items[index].im1,
+                CachedNetworkImage(
                   width: MediaQuery.of(context).size.width * 0.25,
                   height: MediaQuery.of(context).size.height * 0.15,
-                  fit: BoxFit.cover,
+                  imageUrl: Commons.baseURL +
+                      "menu/" +
+                      myCashier.menu.items[index].im1,
+                  placeholder: (context, url) =>
+                      Center(child: CircularProgressIndicator()),
+                  errorWidget: (context, url, d) => Icon(
+                    Icons.error,
+                    size: 50,
+                  ),
                 ),
                 SizedBox(
                   width: 10,
@@ -239,68 +254,70 @@ class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
                                 fontSize: 20,
                                 color: Colors.green.shade400,
                               )),
-                          Container(
-                            decoration:
-                                BoxDecoration(border: Border.all(width: 1)),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                myCashier.myBaskets
-                                        .contains(myCashier.menu.items[index])
-                                    ? InkWell(
-                                        onTap: () {
-                                          myCashier.removeToMyOrder(
-                                              myCashier.menu.items[index]);
-                                        },
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                              border: Border(
-                                                  right: BorderSide(width: 1))),
-                                          child: Icon(
-                                            Icons.remove,
-                                            color: Colors.red,
-                                          ),
-                                        ),
-                                      )
-                                    : SizedBox(),
-                                myCashier.myBaskets
-                                        .contains(myCashier.menu.items[index])
-                                    ? Container(
-                                        alignment: Alignment.center,
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.1,
-                                        child: Text(
-                                            "${myCashier.menu.items[index].qty}"))
-                                    : SizedBox(),
-                                InkWell(
-                                  onTap: () {
-                                    myCashier.addToMyOrder(
-                                        myCashier.menu.items[index]);
-                                  },
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                        border: Border(
-                                            left: BorderSide(
-                                                width: myCashier.myBaskets
-                                                        .contains(myCashier
-                                                            .menu.items[index])
-                                                    ? 1
-                                                    : 0))),
-                                    child: Icon(
-                                      Icons.add,
-                                      color: Colors.green,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
                         ],
                       ),
                     ],
                   ),
                 ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(border: Border.all(width: 1)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          myCashier.myBaskets
+                                  .contains(myCashier.menu.items[index])
+                              ? InkWell(
+                                  onTap: () {
+                                    myCashier.removeToMyOrder(
+                                        myCashier.menu.items[index]);
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        border: Border(
+                                            right: BorderSide(width: 1))),
+                                    child: Icon(
+                                      Icons.remove,
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                )
+                              : SizedBox(),
+                          myCashier.myBaskets
+                                  .contains(myCashier.menu.items[index])
+                              ? Container(
+                                  alignment: Alignment.center,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.1,
+                                  child: Text(
+                                      "${myCashier.menu.items[index].qty}"))
+                              : SizedBox(),
+                          InkWell(
+                            onTap: () {
+                              myCashier
+                                  .addToMyOrder(myCashier.menu.items[index]);
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  border: Border(
+                                      left: BorderSide(
+                                          width: myCashier.myBaskets.contains(
+                                                  myCashier.menu.items[index])
+                                              ? 1
+                                              : 0))),
+                              child: Icon(
+                                Icons.add,
+                                color: Colors.green,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                )
               ],
             ),
           ),

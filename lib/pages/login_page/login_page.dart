@@ -20,13 +20,6 @@ class _LoginPageState extends State<LoginPage> {
   bool _hidePassword = true;
   LoginStatus _loginStatus = LoginStatus.notSignin;
 
-  showPassword() {
-    setState(() {
-      print("hide passs " + _hidePassword.toString());
-      _hidePassword = !_hidePassword;
-    });
-  }
-
   void showSnackBar(String title) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       backgroundColor: Colors.green,
@@ -247,6 +240,11 @@ class _LoginPageState extends State<LoginPage> {
                                           },
                                           controller: txtPassword,
                                           obscureText: _hidePassword,
+                                          onSaved: (val) {
+                                            setState(() {
+                                              _hidePassword = true;
+                                            });
+                                          },
                                           textAlign: TextAlign.left,
                                           decoration: InputDecoration(
                                               prefixIcon: Icon(
@@ -255,7 +253,12 @@ class _LoginPageState extends State<LoginPage> {
                                               ),
                                               suffixIcon: Container(
                                                 child: InkWell(
-                                                  onTap: showPassword(),
+                                                  onTap: () {
+                                                    setState(() {
+                                                      _hidePassword =
+                                                          !_hidePassword;
+                                                    });
+                                                  },
                                                   child: Icon(
                                                       Icons.remove_red_eye,
                                                       color: _hidePassword

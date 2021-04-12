@@ -1,9 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cashier_app/models/menu_model.dart';
 import 'package:cashier_app/models/pesanan_model.dart';
 import 'package:cashier_app/pages/menu_page/menu_page.dart';
 import 'package:cashier_app/services/dbService.dart';
 import 'package:cashier_app/services/providers.dart';
-import 'package:http/http.dart';
+import 'package:cashier_app/utils/constanst.dart';
+import 'package:cashier_app/utils/error.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -42,6 +44,8 @@ class _DashboardPageState extends State<DashboardPage> {
     double widthSreen = MediaQuery.of(context).size.width;
     double heightSreen = MediaQuery.of(context).size.height;
     double defaultMargin = widthSreen * 0.05;
+    PesananProvider pp = Provider.of<PesananProvider>(context, listen: false);
+    pp.loadPesanan();
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -79,18 +83,38 @@ class _DashboardPageState extends State<DashboardPage> {
                           Theme.of(context).platform == TargetPlatform.iOS
                               ? Colors.white
                               : Colors.white,
-                      child: Text("N"),
+                      child: Text(nama == null
+                          ? "X"
+                          : nama.substring(0, 1).toUpperCase()),
                     ),
                     accountName: Text("$nama"),
                     accountEmail: SizedBox()),
-                Text("Menu 1"),
-                Text("Menu 2"),
+                Container(
+                    padding: EdgeInsets.only(left: 16),
+                    alignment: Alignment.centerLeft,
+                    width: widthSreen * 0.7,
+                    height: 48,
+                    decoration: BoxDecoration(color: Colors.green.shade900),
+                    child: Text("Menu", style: TextStyle(color: Colors.white))),
+                Container(
+                    padding: EdgeInsets.only(left: 16),
+                    alignment: Alignment.centerLeft,
+                    margin: EdgeInsets.only(top: 2),
+                    width: widthSreen * 0.7,
+                    height: 48,
+                    decoration: BoxDecoration(color: Colors.green.shade900),
+                    child:
+                        Text("Pesanan", style: TextStyle(color: Colors.white))),
                 Spacer(),
                 InkWell(
                     onTap: () {
                       logOut();
                     },
-                    child: Container(child: Text("Log Out"))),
+                    child: Container(
+                        width: widthSreen * 0.7,
+                        height: 48,
+                        decoration: BoxDecoration(color: Colors.greenAccent),
+                        child: Center(child: Text("LOG OUT")))),
               ],
             ),
           ),
@@ -120,35 +144,10 @@ class _DashboardPageState extends State<DashboardPage> {
                       style: TextStyle(fontSize: 24, color: Colors.black)),
                 ),
                 Expanded(
-                  child: _PesananList(),
+                  child: _PesananList(
+                    meja: nama,
+                  ),
                 ),
-                // SizedBox(
-                //   height: heightSreen * 0.1,
-                // )
-                //Divider(height: 4, color: Colors.black),
-                // _PesananTotal(),
-                // ElevatedButton(
-                //     onPressed: () {
-                //       Navigator.pushNamed(context, "/menu");
-                //     },
-                //     style: ButtonStyle(
-                //         backgroundColor: MaterialStateProperty.all<Color>(
-                //             Colors.greenAccent),
-                //         shape:
-                //             MaterialStateProperty.all<RoundedRectangleBorder>(
-                //                 RoundedRectangleBorder(
-                //                     borderRadius: BorderRadius.circular(10),
-                //                     side: BorderSide(color: Colors.blue))),
-                //         padding: MaterialStateProperty.all<EdgeInsets>(
-                //             EdgeInsets.symmetric(
-                //                 horizontal: widthSreen * 0.2, vertical: 10))),
-                //     child: Text(
-                //       "Buat Pesanan",
-                //       style: TextStyle(
-                //           color: Colors.black,
-                //           fontSize: 20,
-                //           fontWeight: FontWeight.w400),
-                //     )),
               ],
             ),
           ),
@@ -185,6 +184,9 @@ class _PesananTotal extends StatelessWidget {
 }
 
 class _PesananList extends StatelessWidget {
+  final String meja;
+
+  const _PesananList({Key key, this.meja}) : super(key: key);
   @override
   Widget build(BuildContext context) {
 //    var pesanan = context.watch<PesananProvider>();
@@ -195,54 +197,143 @@ class _PesananList extends StatelessWidget {
         ? Center(
             child: CircularProgressIndicator(),
           )
-        : pesanan.data.isEmpty
+        : pesanan.data.where((element) => element.mja == meja).toList().isEmpty
             ? Center(child: Text("Tidak Ada Pesanan"))
             : ListView.builder(
-                itemCount: pesanan.data.length,
-                itemBuilder: (context, index) => Column(
-                      children: [
-                        ExpansionTile(
-                          title: Text(
-                            "nama " + pesanan.data[index].nma,
-                            style: TextStyle(color: Colors.black),
+                itemCount: pesanan.data
+                    .where((element) => element.mja == meja)
+                    .toList()
+                    .length,
+                itemBuilder: (context, index) {
+                  var pesananMeja = pesanan.data
+                      .where((element) => element.mja == meja)
+                      .toList();
+                  return Column(
+                    children: [
+                      ExpansionTile(
+                        collapsedBackgroundColor: Colors.white,
+                        backgroundColor: Colors.white,
+                        title: Text(
+                          pesananMeja[index].nma,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
                           ),
-                          childrenPadding: EdgeInsets.symmetric(
-                            horizontal: 18,
-                          ),
-                          children: [
-                            ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: 5,
-                                itemBuilder: (context, i) => Container(
-                                        child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text("Menu"),
-                                        Text("Total Harga"),
-                                        Text("Jumlah"),
-                                      ],
-                                    ))),
-                            Align(
-                                alignment: Alignment.centerRight,
-                                child: Text("Total Harga")),
-                          ],
                         ),
-                        Divider(),
-                      ],
-                    )
-//                 ListTile(
-//                   leading: Icon(Icons.done),
-//                   trailing: IconButton(
-//                       icon: Icon(Icons.remove_circle_outline),
-//                       onPressed: () {
-// //                    pesanan.remove(pesanan.data[index]);
-//                       }),
-//                   title: Text(
-//                     "nama " + pesanan.data[index].nma,
-//                     style: TextStyle(color: Colors.black),
-//                   ),
-//                 ),
-                );
+                        childrenPadding: EdgeInsets.symmetric(
+                          horizontal: 18,
+                        ),
+                        children: [
+                          FutureBuilder(
+                              future: DBService()
+                                  .getPesananDetails(pesananMeja[index].idt),
+                              builder: (context, snapshot) {
+                                switch (snapshot.connectionState) {
+                                  case ConnectionState.none:
+                                    return Text(
+                                      'Fetch data.',
+                                      textAlign: TextAlign.center,
+                                    );
+                                  case ConnectionState.active:
+                                    return Text('');
+                                  case ConnectionState.waiting:
+                                    return Commons.sampleLoading(
+                                        "Getting Data...");
+                                  case ConnectionState.done:
+                                    if (snapshot.hasError) {
+                                      return Error(
+                                        errorMessage: "Error load menu",
+                                      );
+                                    } else {
+                                      return Column(
+                                        children: [
+                                          ListView.builder(
+                                              shrinkWrap: true,
+                                              itemCount:
+                                                  snapshot.data["data"].length,
+                                              itemBuilder:
+                                                  (context, i) => Container(
+                                                          child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          FutureBuilder(
+                                                              future: DBService()
+                                                                  .getMenuByAcc(
+                                                                      snapshot.data["data"]
+                                                                              [
+                                                                              i]
+                                                                          [
+                                                                          "mnu"]),
+                                                              builder: (context,
+                                                                  ss) {
+                                                                if (ss.connectionState ==
+                                                                    ConnectionState
+                                                                        .done) {
+                                                                  return Expanded(
+                                                                    child: Row(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .spaceBetween,
+                                                                      children: [
+                                                                        Container(
+                                                                          margin:
+                                                                              EdgeInsets.only(right: 4),
+                                                                          color:
+                                                                              Colors.green,
+                                                                          height:
+                                                                              50,
+                                                                          width:
+                                                                              50,
+                                                                          child:
+                                                                              CachedNetworkImage(imageUrl: Commons.baseURL + "menu/" + ss.data["data"]["im1"].toString()),
+                                                                        ),
+                                                                        Row(
+                                                                          mainAxisAlignment:
+                                                                              MainAxisAlignment.start,
+                                                                          children: [
+                                                                            Text(ss.data["data"]["nma"].toString()),
+                                                                          ],
+                                                                        ),
+                                                                        Text(ss
+                                                                            .data["data"]["hrg"]
+                                                                            .toString()),
+                                                                      ],
+                                                                    ),
+                                                                  );
+                                                                } else {
+                                                                  return Text(
+                                                                      "");
+                                                                }
+                                                              }),
+                                                          Text("x" +
+                                                              snapshot
+                                                                  .data["data"]
+                                                                      [i]["jml"]
+                                                                  .toString()),
+                                                        ],
+                                                      ))),
+                                        ],
+                                      );
+                                    }
+                                }
+                                return Commons.sampleLoading("load data ... ");
+                              }),
+                          Align(
+                              alignment: Alignment.centerRight,
+                              child: Text("Total Harga : " +
+                                  pesananMeja[index].tot.toString())),
+                        ],
+                      ),
+                      Divider(),
+                      index != pesananMeja.length - 1
+                          ? SizedBox()
+                          : SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.1,
+                            )
+                    ],
+                  );
+                });
   }
 }

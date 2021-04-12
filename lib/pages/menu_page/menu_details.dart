@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cashier_app/pages/menu_page/menu_dialog.dart';
 import 'package:cashier_app/services/myCashier.dart';
 import 'package:cashier_app/services/providers.dart';
@@ -16,11 +17,19 @@ class MenuDetails extends StatelessWidget {
         children: [
           Align(
             alignment: Alignment.topCenter,
-            child: Image.network(
-              Commons.baseURL + "menu/" + myMenu.activeMakanan.im1.toString(),
+            child: CachedNetworkImage(
+              fit: BoxFit.cover,
               height: MediaQuery.of(context).size.height * 0.8,
               width: MediaQuery.of(context).size.width,
-              fit: BoxFit.cover,
+              imageUrl: Commons.baseURL +
+                  "menu/" +
+                  myMenu.activeMakanan.im1.toString(),
+              placeholder: (context, url) =>
+                  Center(child: CircularProgressIndicator()),
+              errorWidget: (context, url, d) => Icon(
+                Icons.error,
+                size: 50,
+              ),
             ),
           ),
           Align(
@@ -112,7 +121,9 @@ class MenuDetails extends StatelessWidget {
                       child: Text(
                         "Tambah ke Pesanan",
                         style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.w700),
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700),
                       ),
                     ),
                   ),
