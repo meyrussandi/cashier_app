@@ -57,15 +57,15 @@ class DBService {
     }
   }
 
-  Future<Pesanan> getPesanan() async {
+  Future getPesanan(String meja) async {
     try {
-      var map = Map<String, dynamic>();
-      final response = await http.get(Commons.baseURL + "getpesanan.php");
+      final response =
+          await http.get(Commons.baseURL + "getpesanan.php?mja=$meja");
       if (response.statusCode == 200) {
         var responseJson = Commons.returnResponse(response);
 //        menu = Menu.fromJson(responseJson);
-        // print("data menu" + responseJson.toString());
-        return Pesanan.fromJson(responseJson);
+        print("data menu" + responseJson["data"].toString());
+        return responseJson;
         //return menu;
       } else {
         return null;

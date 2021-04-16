@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cashier_app/models/menu_model.dart';
 import 'package:cashier_app/models/pesanan_model.dart';
 import 'package:cashier_app/pages/menu_page/menu_page.dart';
+import 'package:cashier_app/pages/pesananedit_page/pesananedit_page.dart';
 import 'package:cashier_app/services/dbService.dart';
 import 'package:cashier_app/services/providers.dart';
 import 'package:cashier_app/utils/constanst.dart';
@@ -44,8 +45,7 @@ class _DashboardPageState extends State<DashboardPage> {
     double widthSreen = MediaQuery.of(context).size.width;
     double heightSreen = MediaQuery.of(context).size.height;
     double defaultMargin = widthSreen * 0.05;
-    PesananProvider pp = Provider.of<PesananProvider>(context, listen: false);
-    pp.loadPesanan();
+
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -140,8 +140,34 @@ class _DashboardPageState extends State<DashboardPage> {
                   padding: EdgeInsets.all(6),
                   width: widthSreen,
                   color: Colors.grey.shade300,
-                  child: Text("List Pesanan $nama",
-                      style: TextStyle(fontSize: 24, color: Colors.black)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Row(
+                        children: [
+                          Text("List Pesanan ",
+                              style: TextStyle(
+                                fontSize: 24,
+                                color: Colors.black,
+                              )),
+                          Text("$nama",
+                              style: TextStyle(
+                                  fontSize: 24,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                      InkWell(
+                          onTap: () {
+                            setState(() {});
+                          },
+                          child: Icon(
+                            Icons.refresh,
+                            color: Colors.green,
+                            size: 30,
+                          )),
+                    ],
+                  ),
                 ),
                 Expanded(
                   child: _PesananList(
@@ -157,183 +183,253 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 }
 
-class _PesananTotal extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    var pesanan = context.watch<PesananModel>();
-
-    return pesanan == null
-        ? Text("Tidak ada Pesanan")
-        : SizedBox(
-            child: Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Consumer<MenuProvider>(
-                      builder: (context, pesanan, chils) => Text(
-                          pesanan.menu == null
-                              ? "Total Pesanan "
-                              : "Total Pesanan " +
-                                  pesanan.menu.items.length.toString(),
-                          style: TextStyle(fontSize: 24, color: Colors.black)))
-                ],
-              ),
-            ),
-          );
-  }
-}
-
 class _PesananList extends StatelessWidget {
   final String meja;
 
   const _PesananList({Key key, this.meja}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-//    var pesanan = context.watch<PesananProvider>();
-    final pesanan = context.select((PesananProvider p) => p.pesanan);
-//    pesanan.loadPesanan();
-    print("data pesanan : " + pesanan.toString());
-    return pesanan == null
-        ? Center(
-            child: CircularProgressIndicator(),
-          )
-        : pesanan.data.where((element) => element.mja == meja).toList().isEmpty
-            ? Center(child: Text("Tidak Ada Pesanan"))
-            : ListView.builder(
-                itemCount: pesanan.data
-                    .where((element) => element.mja == meja)
-                    .toList()
-                    .length,
-                itemBuilder: (context, index) {
-                  var pesananMeja = pesanan.data
-                      .where((element) => element.mja == meja)
-                      .toList();
-                  return Column(
-                    children: [
-                      ExpansionTile(
-                        collapsedBackgroundColor: Colors.white,
-                        backgroundColor: Colors.white,
-                        title: Text(
-                          pesananMeja[index].nma,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 20,
-                          ),
-                        ),
-                        childrenPadding: EdgeInsets.symmetric(
-                          horizontal: 18,
-                        ),
-                        children: [
-                          FutureBuilder(
-                              future: DBService()
-                                  .getPesananDetails(pesananMeja[index].idt),
-                              builder: (context, snapshot) {
-                                switch (snapshot.connectionState) {
-                                  case ConnectionState.none:
-                                    return Text(
-                                      'Fetch data.',
-                                      textAlign: TextAlign.center,
-                                    );
-                                  case ConnectionState.active:
-                                    return Text('');
-                                  case ConnectionState.waiting:
-                                    return Commons.sampleLoading(
-                                        "Getting Data...");
-                                  case ConnectionState.done:
-                                    if (snapshot.hasError) {
-                                      return Error(
-                                        errorMessage: "Error load menu",
-                                      );
-                                    } else {
-                                      return Column(
-                                        children: [
-                                          ListView.builder(
-                                              shrinkWrap: true,
-                                              itemCount:
-                                                  snapshot.data["data"].length,
-                                              itemBuilder:
-                                                  (context, i) => Container(
-                                                          child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: [
-                                                          FutureBuilder(
-                                                              future: DBService()
-                                                                  .getMenuByAcc(
+    return FutureBuilder(
+        future: DBService().getPesanan(meja),
+        builder: (context, sn) {
+          switch (sn.connectionState) {
+            case ConnectionState.none:
+              return Text(
+                'Fetch data.',
+                textAlign: TextAlign.center,
+              );
+            case ConnectionState.active:
+              return Text('');
+            case ConnectionState.waiting:
+              return Commons.sampleLoading("Getting Data...");
+            case ConnectionState.done:
+              if (sn.hasError) {
+                return Error(
+                  errorMessage: "Error load menu",
+                );
+              } else {
+                if (sn.data["data"] == null) {
+                  return Center(
+                    child: Text("Kosong"),
+                  );
+                } else {
+                  return ListView.builder(
+                      itemCount: sn.data["data"]
+                          .where((element) => element["mja"] == meja)
+                          .toList()
+                          .length,
+                      itemBuilder: (context, index) {
+                        var pesananMeja = sn.data["data"]
+                            .where((element) => element["mja"] == meja)
+                            .toList();
+                        return Column(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.symmetric(horizontal: 16),
+                              child: ExpansionTile(
+                                collapsedBackgroundColor: Colors.white,
+                                backgroundColor: Colors.white,
+                                title: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      pesananMeja[index]["nma"],
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 20,
+                                      ),
+                                    ),
+                                    Container(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 12),
+                                      decoration: BoxDecoration(
+                                          color: pesananMeja[index]["val"] ==
+                                                  "0000-00-00 00:00:00"
+                                              ? Colors.grey.shade300
+                                              : Colors.greenAccent,
+                                          borderRadius:
+                                              BorderRadius.circular(5)),
+                                      child: Text(
+                                        pesananMeja[index]["val"] ==
+                                                "0000-00-00 00:00:00"
+                                            ? "Waiting"
+                                            : "Diproses",
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                childrenPadding: EdgeInsets.symmetric(
+                                  horizontal: 18,
+                                ),
+                                children: [
+                                  FutureBuilder(
+                                      future: DBService().getPesananDetails(
+                                          pesananMeja[index]["idt"]),
+                                      builder: (context, snapshot) {
+                                        switch (snapshot.connectionState) {
+                                          case ConnectionState.none:
+                                            return Text(
+                                              'Fetch data.',
+                                              textAlign: TextAlign.center,
+                                            );
+                                          case ConnectionState.active:
+                                            return Text('');
+                                          case ConnectionState.waiting:
+                                            return Commons.sampleLoading(
+                                                "Getting Data...");
+                                          case ConnectionState.done:
+                                            if (snapshot.hasError) {
+                                              return Error(
+                                                errorMessage:
+                                                    "Error load pesanan",
+                                              );
+                                            } else {
+                                              return Column(
+                                                children: [
+                                                  ListView.builder(
+                                                      physics:
+                                                          NeverScrollableScrollPhysics(),
+                                                      shrinkWrap: true,
+                                                      itemCount: snapshot
+                                                          .data["data"].length,
+                                                      itemBuilder: (context,
+                                                              i) =>
+                                                          Container(
+                                                              child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
+                                                            children: [
+                                                              FutureBuilder(
+                                                                  future: DBService().getMenuByAcc(
                                                                       snapshot.data["data"]
                                                                               [
                                                                               i]
                                                                           [
                                                                           "mnu"]),
-                                                              builder: (context,
-                                                                  ss) {
-                                                                if (ss.connectionState ==
-                                                                    ConnectionState
-                                                                        .done) {
-                                                                  return Expanded(
-                                                                    child: Row(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .spaceBetween,
-                                                                      children: [
-                                                                        Container(
-                                                                          margin:
-                                                                              EdgeInsets.only(right: 4),
-                                                                          color:
-                                                                              Colors.green,
-                                                                          height:
-                                                                              50,
-                                                                          width:
-                                                                              50,
-                                                                          child:
-                                                                              CachedNetworkImage(imageUrl: Commons.baseURL + "menu/" + ss.data["data"]["im1"].toString()),
-                                                                        ),
-                                                                        Row(
+                                                                  builder:
+                                                                      (context,
+                                                                          ss) {
+                                                                    if (ss.connectionState ==
+                                                                        ConnectionState
+                                                                            .done) {
+                                                                      return Expanded(
+                                                                        child:
+                                                                            Row(
                                                                           mainAxisAlignment:
-                                                                              MainAxisAlignment.start,
+                                                                              MainAxisAlignment.spaceBetween,
                                                                           children: [
-                                                                            Text(ss.data["data"]["nma"].toString()),
+                                                                            Container(
+                                                                              margin: EdgeInsets.only(right: 4),
+                                                                              color: Colors.green,
+                                                                              height: 50,
+                                                                              width: 50,
+                                                                              child: CachedNetworkImage(imageUrl: Commons.baseURL + "menu/" + ss.data["data"]["im1"].toString()),
+                                                                            ),
+                                                                            Row(
+                                                                              mainAxisAlignment: MainAxisAlignment.start,
+                                                                              children: [
+                                                                                Text(ss.data["data"]["nma"].toString()),
+                                                                              ],
+                                                                            ),
+                                                                            Text(ss.data["data"]["hrg"].toString()),
                                                                           ],
                                                                         ),
-                                                                        Text(ss
-                                                                            .data["data"]["hrg"]
-                                                                            .toString()),
-                                                                      ],
-                                                                    ),
-                                                                  );
-                                                                } else {
-                                                                  return Text(
-                                                                      "");
-                                                                }
-                                                              }),
-                                                          Text("x" +
-                                                              snapshot
-                                                                  .data["data"]
-                                                                      [i]["jml"]
-                                                                  .toString()),
-                                                        ],
-                                                      ))),
+                                                                      );
+                                                                    } else {
+                                                                      return Text(
+                                                                          "");
+                                                                    }
+                                                                  }),
+                                                              Text(" x " +
+                                                                  snapshot.data[
+                                                                          "data"]
+                                                                          [i][
+                                                                          "jml"]
+                                                                      .split(
+                                                                          ".")[0]
+                                                                      .toString()),
+                                                            ],
+                                                          ))),
+                                                ],
+                                              );
+                                            }
+                                        }
+                                        return Commons.sampleLoading(
+                                            "load data ... ");
+                                      }),
+                                  SizedBox(
+                                    height: 8,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          Text("Total Harga : " +
+                                              pesananMeja[index]["tot"]
+                                                  .toString()),
+                                          SizedBox(
+                                            height: 8,
+                                          ),
+                                          pesananMeja[index]["val"] ==
+                                                  "0000-00-00 00:00:00"
+                                              ? InkWell(
+                                                  onTap: () {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                PesananEditPage(
+                                                                  idt: pesananMeja[
+                                                                          index]
+                                                                      ["idt"],
+                                                                )));
+                                                  },
+                                                  child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment.end,
+                                                      children: [
+                                                        Text("EDIT",
+                                                            style: TextStyle(
+                                                                color:
+                                                                    Colors.red,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold)),
+                                                      ]),
+                                                )
+                                              : SizedBox()
                                         ],
-                                      );
-                                    }
-                                }
-                                return Commons.sampleLoading("load data ... ");
-                              }),
-                          Align(
-                              alignment: Alignment.centerRight,
-                              child: Text("Total Harga : " +
-                                  pesananMeja[index].tot.toString())),
-                        ],
-                      ),
-                      Divider(),
-                      index != pesananMeja.length - 1
-                          ? SizedBox()
-                          : SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.1,
-                            )
-                    ],
-                  );
-                });
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 8,
+                                  )
+                                ],
+                              ),
+                            ),
+                            Divider(),
+                            index != pesananMeja.length - 1
+                                ? SizedBox()
+                                : SizedBox(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.1,
+                                  )
+                          ],
+                        );
+                      });
+                }
+              }
+          }
+        });
   }
 }

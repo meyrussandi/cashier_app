@@ -100,39 +100,39 @@ class MenuProvider extends ChangeNotifier {
   }
 }
 
-class PesananProvider extends ChangeNotifier {
-  List<PesananModel> _pesanan;
-  Menu _menu;
-  Pesanan pesanan;
+// class PesananProvider extends ChangeNotifier {
+//   List<PesananModel> _pesanan;
+//   Menu _menu;
+//   Pesanan pesanan;
 
-  final List<int> _itemsId = [];
-  PesananProvider() {
-    loadPesanan();
-  }
+//   final List<int> _itemsId = [];
+//   PesananProvider() {
+//     loadPesanan();
+//   }
 
-  void loadPesanan() async {
-    pesanan = await DBService().getPesanan();
-    print("data pesanan di provider: " + pesanan.toString());
-    notifyListeners();
-  }
+//   void loadPesanan() async {
+//     pesanan = await DBService().getPesanan();
+//     print("data pesanan di provider: " + pesanan.toString());
+//     notifyListeners();
+//   }
 
-  set menu(Menu newMenu) {
-    _menu = newMenu;
-    notifyListeners();
-  }
+//   set menu(Menu newMenu) {
+//     _menu = newMenu;
+//     notifyListeners();
+//   }
 
-  List<Makanan> get items => _itemsId.map((id) => _menu.getById(id)).toList();
+//   List<Makanan> get items => _itemsId.map((id) => _menu.getById(id)).toList();
 
-  double get totalPrice =>
-      items.fold(0, (total, current) => total + current.hrg);
+//   double get totalPrice =>
+//       items.fold(0, (total, current) => total + current.hrg);
 
-  void add(Makanan makanan) {
-    _itemsId.add(makanan.idn);
-    notifyListeners();
-  }
+//   void add(Makanan makanan) {
+//     _itemsId.add(makanan.idn);
+//     notifyListeners();
+//   }
 
-  void remove(Makanan makanan) {
-    _itemsId.remove(makanan.idn);
-    notifyListeners();
-  }
-}
+//   void remove(Makanan makanan) {
+//     _itemsId.remove(makanan.idn);
+//     notifyListeners();
+//   }
+// }

@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       providers: [
 //        ChangeNotifierProvider(create: (context) => MyCashier()),
         ChangeNotifierProvider(create: (context) => MenuProvider()),
-        ChangeNotifierProvider(create: (context) => PesananProvider()),
+//        ChangeNotifierProvider(create: (context) => PesananProvider()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
