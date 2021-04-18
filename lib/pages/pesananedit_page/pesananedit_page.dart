@@ -67,15 +67,14 @@ class _PesananEditPageState extends State<PesananEditPage> {
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     InkWell(
-                                      onTap: () {
+                                      onTap: () async {
                                         //delete berdasarkan idt and mnu
                                         print("idt : " +
                                             snapshot.data["data"][i]["idn"]);
-                                        setState(() {
-                                          DBService().deletepesanandetails(
-                                              snapshot.data["data"][i]["idt"],
-                                              snapshot.data["data"][i]["mnu"]);
-                                        });
+                                        await DBService().deletepesanandetails(
+                                            snapshot.data["data"][i]["idt"],
+                                            snapshot.data["data"][i]["mnu"]);
+                                        setState(() {});
                                       },
                                       child: Icon(
                                         Icons.delete_forever,
@@ -87,27 +86,26 @@ class _PesananEditPageState extends State<PesananEditPage> {
                                             width: 30,
                                           )
                                         : InkWell(
-                                            onTap: () {
-                                              setState(() {
-                                                DBService()
-                                                    .minjmlpesanandetails(
-                                                        snapshot.data["data"][i]
-                                                            ["idt"],
-                                                        snapshot.data["data"][i]
-                                                            ["mnu"]);
-                                              });
+                                            onTap: () async {
+                                              await DBService()
+                                                  .minjmlpesanandetails(
+                                                      snapshot.data["data"][i]
+                                                          ["idt"],
+                                                      snapshot.data["data"][i]
+                                                          ["mnu"]);
+
+                                              setState(() {});
                                             },
                                             child: Icon(Icons.remove)),
                                     Text(snapshot.data["data"][i]["jml"]
                                         .split(".")[0]
                                         .toString()),
                                     InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          DBService().addjmlpesanandetails(
-                                              snapshot.data["data"][i]["idt"],
-                                              snapshot.data["data"][i]["mnu"]);
-                                        });
+                                      onTap: () async {
+                                        await DBService().addjmlpesanandetails(
+                                            snapshot.data["data"][i]["idt"],
+                                            snapshot.data["data"][i]["mnu"]);
+                                        setState(() {});
                                       },
                                       child: Icon(Icons.add),
                                     )
