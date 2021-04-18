@@ -46,7 +46,6 @@ class DBService {
       });
 
       if (response.statusCode == 200) {
-        print("data : " + response.body.toString());
         return "200";
       } else {
         return response.statusCode.toString();
@@ -64,7 +63,7 @@ class DBService {
       if (response.statusCode == 200) {
         var responseJson = Commons.returnResponse(response);
 //        menu = Menu.fromJson(responseJson);
-        print("data menu" + responseJson["data"].toString());
+
         return responseJson;
         //return menu;
       } else {
@@ -110,7 +109,6 @@ class DBService {
           Commons.baseURL + "addjmlpesanandetails.php",
           body: <String, dynamic>{"idt": idt, "mnu": mnu});
       if (response.statusCode == 200) {
-        print("" + jsonDecode(response.body).toString());
         return jsonDecode(response.body);
       } else {
         return null;
@@ -128,7 +126,6 @@ class DBService {
           Commons.baseURL + "minjmlpesanandetails.php",
           body: <String, dynamic>{"idt": idt, "mnu": mnu});
       if (response.statusCode == 200) {
-        print("" + jsonDecode(response.body).toString());
         return jsonDecode(response.body);
       } else {
         return null;
@@ -146,7 +143,23 @@ class DBService {
           Commons.baseURL + "deletepesanandetails.php",
           body: <String, dynamic>{"idt": idt, "mnu": mnu});
       if (response.statusCode == 200) {
-        print("" + jsonDecode(response.body).toString());
+        return jsonDecode(response.body);
+      } else {
+        return null;
+      }
+    } on SocketDirection {
+      return null;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  Future updatetotpesanan(String idt, String tot) async {
+    try {
+      final response = await http.post(Commons.baseURL + "updatetotpesanan.php",
+          body: <String, dynamic>{"idt": idt, "tot": tot});
+      print("update total" + jsonDecode(response.body).toString());
+      if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else {
         return null;

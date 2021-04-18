@@ -400,7 +400,10 @@ class __PesananListState extends State<_PesananList> {
                                                                   idt: pesananMeja[
                                                                           index]
                                                                       ["idt"],
-                                                                )));
+                                                                ))).then(
+                                                        (value) {
+                                                      setState(() {});
+                                                    });
                                                   },
                                                   child: Row(
                                                       mainAxisAlignment:

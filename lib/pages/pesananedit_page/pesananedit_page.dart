@@ -52,6 +52,13 @@ class _PesananEditPageState extends State<PesananEditPage> {
                       errorMessage: "Error load pesanan",
                     );
                   } else {
+                    var tot = snapshot.data["data"]
+                        .map((m) => double.parse(m["tot"]))
+                        .reduce((a, b) => a + b);
+
+                    print("total : " + tot.toString());
+                    DBService().updatetotpesanan(widget.idt, tot.toString());
+
                     return ListView.builder(
                         shrinkWrap: true,
                         itemCount: snapshot.data["data"].length,
@@ -102,10 +109,13 @@ class _PesananEditPageState extends State<PesananEditPage> {
                                         .toString()),
                                     InkWell(
                                       onTap: () async {
-                                        await DBService().addjmlpesanandetails(
-                                            snapshot.data["data"][i]["idt"],
-                                            snapshot.data["data"][i]["mnu"]);
-                                        setState(() {});
+                                        await DBService()
+                                            .addjmlpesanandetails(
+                                                snapshot.data["data"][i]["idt"],
+                                                snapshot.data["data"][i]["mnu"])
+                                            .then((value) {
+                                          setState(() {});
+                                        });
                                       },
                                       child: Icon(Icons.add),
                                     )
