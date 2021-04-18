@@ -104,6 +104,60 @@ class DBService {
     }
   }
 
+  Future addjmlpesanandetails(String idt, String mnu) async {
+    try {
+      final response = await http.post(
+          Commons.baseURL + "addjmlpesanandetails.php",
+          body: <String, dynamic>{"idt": idt, "mnu": mnu});
+      if (response.statusCode == 200) {
+        print("" + jsonDecode(response.body).toString());
+        return jsonDecode(response.body);
+      } else {
+        return null;
+      }
+    } on SocketDirection {
+      return null;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  Future minjmlpesanandetails(String idt, String mnu) async {
+    try {
+      final response = await http.post(
+          Commons.baseURL + "minjmlpesanandetails.php",
+          body: <String, dynamic>{"idt": idt, "mnu": mnu});
+      if (response.statusCode == 200) {
+        print("" + jsonDecode(response.body).toString());
+        return jsonDecode(response.body);
+      } else {
+        return null;
+      }
+    } on SocketDirection {
+      return null;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  Future deletepesanandetails(String idt, String mnu) async {
+    try {
+      final response = await http.post(
+          Commons.baseURL + "deletepesanandetails.php",
+          body: <String, dynamic>{"idt": idt, "mnu": mnu});
+      if (response.statusCode == 200) {
+        print("" + jsonDecode(response.body).toString());
+        return jsonDecode(response.body);
+      } else {
+        return null;
+      }
+    } on SocketDirection {
+      return null;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
   Future getMenuByAcc(String acc) async {
     try {
       final response = await http

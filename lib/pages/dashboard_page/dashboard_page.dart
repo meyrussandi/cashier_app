@@ -183,14 +183,20 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 }
 
-class _PesananList extends StatelessWidget {
+class _PesananList extends StatefulWidget {
   final String meja;
 
   const _PesananList({Key key, this.meja}) : super(key: key);
+
+  @override
+  __PesananListState createState() => __PesananListState();
+}
+
+class __PesananListState extends State<_PesananList> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: DBService().getPesanan(meja),
+        future: DBService().getPesanan(widget.meja),
         builder: (context, sn) {
           switch (sn.connectionState) {
             case ConnectionState.none:
@@ -206,6 +212,9 @@ class _PesananList extends StatelessWidget {
               if (sn.hasError) {
                 return Error(
                   errorMessage: "Error load menu",
+                  onRetryPressed: () {
+                    setState(() {});
+                  },
                 );
               } else {
                 if (sn.data["data"] == null) {
@@ -215,12 +224,12 @@ class _PesananList extends StatelessWidget {
                 } else {
                   return ListView.builder(
                       itemCount: sn.data["data"]
-                          .where((element) => element["mja"] == meja)
+                          .where((element) => element["mja"] == widget.meja)
                           .toList()
                           .length,
                       itemBuilder: (context, index) {
                         var pesananMeja = sn.data["data"]
-                            .where((element) => element["mja"] == meja)
+                            .where((element) => element["mja"] == widget.meja)
                             .toList();
                         return Column(
                           children: [
